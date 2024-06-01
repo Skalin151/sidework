@@ -1,4 +1,4 @@
-1012345678901	O Segredo Perdido	Joao Silva	Ficcao Cientifica	2005	0   1
+1012345678901	O Segredo Perdido	Joao Silva	Ficcao Cientifica	2005	0
 1023456789120	A Jornada Inesperada	Maria Fernandes	Aventura	2010	0
 1123456789230	Noite Sombria	Carlos Pereira	Terror	2012	0
 2023456789012	Caminhos Cruzados	Ana Souza	Romance	2018	0

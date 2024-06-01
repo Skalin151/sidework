@@ -3,18 +3,27 @@
 #include <string.h>
 #include <ctype.h>
 #include <locale.h>
-#include "requicao.h"
+#include "requisicao.h"
 #include "livros.h"
-#include "estruturas.h"
+
+#define MAX_LIVROS 100
+#define MAX_REQUISITANTES 100
+#define MAX_DISTRITOS 100
+#define MAX_CONCELHOS 100
+#define MAX_FREGUESISAS 100
+#define MAX_REQ_LIVROS 100
+#define REQUISITADO 1
+#define NAO_REQUISITADO 0
 
 // Protótipos de funções
 int hash(char *ISBN);
+int hashISBN(char *isbn);
 void adicionarLivro();
 Livro *buscarLivro(char *ISBN);
 void gravarLivros(FILE *arquivo);
 void gravarRequisitantes(FILE *arquivo);
 void listarLivros();
-void incluirRequisitante();
+void CriarRequisitante();
 int verificarExistenciaRequisitante(int id_requisitante);
 void listarRequisitantes();
 void carregarRequisitantes();
@@ -32,7 +41,6 @@ void listarRequisicoes();
 void gravarRequisicoes(FILE *arquivo);
 void carregarRequisicoes();
 void salvarRequisicoes();
-void registarErro(const char *mensagem);
 
 int main() {
     setlocale(LC_ALL, "Portuguese");
@@ -46,10 +54,10 @@ int main() {
         printf("2. Buscar um livro por ISBN\n");
         printf("3. Listar todos os livros da biblioteca\n");
         printf("4. Gerir a lista de requisitantes\n");
-        printf("5. Gerir as requisições de livros\n");
+        printf("5. Gerir as requisicoes de livros\n");
         printf("6. Gravar todos os dados em ficheiros de texto\n");
         printf("7. Sair\n");
-        printf("Escolha uma opção: ");
+        printf("Escolha uma opcao: ");
         scanf("%d", &opcao);
 
         switch (opcao) {
@@ -58,40 +66,35 @@ int main() {
                 break;
             case 2: {
                 char ISBN[14];
-                printf("Digite o ISBN do livro: ");
-                scanf("%s", ISBN);
+                printf("Digite o ISBN do livro (13 digitos): ");
+                do {
+                    printf("Digite o ISBN do livro (13 digitos): ");
+                    scanf("%s", ISBN);
+                if (strlen(ISBN) != 13) {
+                    printf("ISBN invalido. Deve conter exatamente 13 digitos.\n");
+                    }
+                } while (strlen(ISBN) != 13);
+
                 Livro *livro = buscarLivro(ISBN);
                 if (livro != NULL) {
                     printf("Livro encontrado: %s\n", livro->titulo);
-                    registarErro("Livro encontrado.\n");
+                    printf("Autor: %s\n", livro->autor);
+                    printf("Area: %s\n", livro->area);
+                    printf("Ano de Publicacao: %s\n", livro->ano_publicacao);
+
                 } else {
                     printf("Livro não encontrado.\n");
-                    registarErro("Livro não encontrado.\n");
                 }
                 break;
             }
-            case 3:{
-                int sub_opcao;
-                while (1) {
-                    printf("\n### CONSULTAR LIVROS ###\n");
-                    printf("1. Listar todos os livros");
-                    printf("2. Area com mais livros");
-                    scanf("%d", &sub_opcao);
-                    switch (sub_opcao) {
-                        case 1:
-                            listarLivros();
-                            break;
-                        case 2:
-                            break;
-                    }
-                }
-            }
+            case 3:
+                listarLivros();
                 break;
             case 4: {
                 int sub_opcao;
                 while (1) {
                     printf("\n### GERIR REQUISITANTES ###\n");
-                    printf("1. Incluir novo requisitante\n");
+                    printf("1. Criar novo requisitante\n");
                     printf("2. Verificar existência de requisitante\n");
                     printf("3. Listar todos os requisitantes\n");
                     printf("4. Listar usuarios mais requesitantes\n");
@@ -100,7 +103,7 @@ int main() {
                     scanf("%d", &sub_opcao);
                     switch (sub_opcao) {
                         case 1:
-                            incluirRequisitante();
+                            CriarRequisitante();
                             break;
                         case 2: {
                             int id_requisitante;
@@ -108,10 +111,8 @@ int main() {
                             scanf("%d", &id_requisitante);
                             if (verificarExistenciaRequisitante(id_requisitante)) {
                                 printf("Requisitante encontrado.\n");
-                                registarErro("Requisitante encontrado.\n");
                             } else {
-                                printf("Requisitante não encontrado.\n");
-                                registarErro("Requisitante não encontrado.\n");
+                                printf("Requisitante nao encontrado.\n");
                             }
                             break;
                         }
@@ -125,7 +126,6 @@ int main() {
                             return;
                         default:
                             printf("Opcao invalida.\n");
-                            registarErro("Opcao invalida.\n");
                     }
                     if (sub_opcao == 5) {
                         break;
@@ -133,7 +133,6 @@ int main() {
                 }
                 break;
             }
-
             case 5: {
                 int sub_opcao;
                 char ISBN[14];
@@ -142,9 +141,9 @@ int main() {
                 printf("1. Efetuar requisição de um livro\n");
                 printf("2. Devolver um livro\n");
                 printf("3. Listar livros requisitados\n");
-                printf("4. Listar livros mais requisitados\n");
+                printf("3. Listar livros mais requisitados\n");
                 printf("5. Voltar ao menu principal\n");
-                printf("Escolha uma opção: ");
+                printf("Escolha uma opcao: ");
                 scanf("%d", &sub_opcao);
                 switch (sub_opcao) {
                     case 1:
@@ -153,22 +152,21 @@ int main() {
                         printf("Digite o ID do requisitante: ");
                         scanf("%d", &id_requisitante);
                         efetuarRequisicaoLivro(ISBN, id_requisitante);
-                        salvarRequisicoes();
+                        //salvarRequisicoes();
                         break;
                     case 2:
                         devolverLivro();
-                        salvarRequisicoes();
+                        //salvarRequisicoes();
                         break;
                     case 3:
                         listarLivrosRequisitados();
                         break;
                     case 4:
-                        
                         break;
                     case 5:
                         return;
                     default:
-                        printf("Opção inválida.\n");
+                        printf("Opção invalida.\n");
                 }
                 break;
             }
@@ -176,24 +174,20 @@ int main() {
                 FILE *arquivo = fopen("livros.txt", "w");
                 if (arquivo == NULL) {
                     printf("Erro ao abrir o arquivo para gravar os livros.\n");
-                    registarErro("Erro ao abrir o arquivo para gravar os livros.\n");
                     exit(1);
                 }
                 gravarLivros(arquivo);
                 fclose(arquivo);
-                printf("Dados dos livros gravados com sucesso no arquivo 'livros.txt'.\n");
-                registarErro("Dados dos livros gravados com sucesso no arquivo 'livros.txt'.\n");
+                printf("Dados dos livros gravados com sucesso no arquivo livros.txt'.\n");
 
                 FILE *requisitantes_arquivo = fopen("requisitantesnovos.txt", "w");
                 if (requisitantes_arquivo == NULL) {
                     printf("Erro ao abrir o arquivo de requisitantes.\n");
-                    registarErro("Erro ao abrir o arquivo de requisitantes.\n");
                     return 1;
                 }
                 gravarRequisitantes(requisitantes_arquivo);
                 fclose(requisitantes_arquivo);
                 printf("Dados dos requisitantes gravados com sucesso no arquivo 'requisitantesnovos.txt'.\n");
-                registarErro("Dados dos requisitantes gravados com sucesso no arquivo 'requisitantesnovos.txt'.\n");
 
                 break;
             }
@@ -201,9 +195,10 @@ int main() {
                 printf("A sair do programa...\n");
                 exit(0);
             default:
-                printf("Opção invalida.\n");
-                registarErro("Opção invalida.\n");
+                printf("Opcao invalida.\n");
         }
     }
     return 0;
 }
+
+

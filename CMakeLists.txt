@@ -3,5 +3,6 @@ project(sidework C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(sidework main.c
-        requicao.h)
+include_directories(.)
+
+add_executable(sidework main.c)

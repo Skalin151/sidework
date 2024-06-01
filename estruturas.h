@@ -16,10 +16,10 @@ typedef struct Livro {
     char autor[50];
     char area[50];
     int ano_publicacao;
-    int status; // status do livro: 0 para n√£o requisitado, 1 para requisitado
+    int status; // status do livro: 0 para n„o requisitado, 1 para requisitado
     int id_requisitante;
     int qtd_requisicoes;
-    struct Livro *prox; // Ponteiro para o pr√≥ximo livro na lista ligada
+    struct Livro *prox; // Ponteiro para o prÛximo livro na lista ligada
 } Livro;
 
 typedef struct Requisitante {
@@ -29,13 +29,13 @@ typedef struct Requisitante {
     char data_nasc[11]; // formato [dd-mm-aaaa]
     char id_freguesia[7]; // 6 caracteres (distrito + concelho + freguesia)
     int novo;
-    struct Requisitante *prox; // Ponteiro para o pr√≥ximo requisitante na lista ligada
+    struct Requisitante *prox; // Ponteiro para o prÛximo requisitante na lista ligada
 } Requisitante;
 
 typedef struct RequisicaoLivro {
     char ISBN[14];
     int id_requisitante;
-    struct RequisicaoLivro *prox; // Ponteiro para a pr√≥xima requisi√ß√£o de livro na lista ligada
+    struct RequisicaoLivro *prox; // Ponteiro para a prÛxima requisiÁ„o de livro na lista ligada
 } RequisicaoLivro;
 
 typedef struct Distrito {

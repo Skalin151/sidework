@@ -1,13 +1,22 @@
 #ifndef SIDEWORK_LIVROS_H
 #define SIDEWORK_LIVROS_H
 
+#define MAX_LIVROS 100
+#define MAX_REQUISITANTES 100
+#define MAX_DISTRITOS 100
+#define MAX_CONCELHOS 100
+#define MAX_FREGUESISAS 100
+#define MAX_REQ_LIVROS 100
+#define REQUISITADO 1
+#define NAO_REQUISITADO 0
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <locale.h>
-#include "requicao.h"
 #include "estruturas.h"
+#include "requisicao.h"
 
 int validarDataNascimento(char *data_nasc);
 int validarIdFreguesia(char *id_freguesia);
@@ -45,7 +54,6 @@ void adicionarLivro() {
     printf("Livro adicionado com sucesso!\n");
 }
 
-
 // Função para gravar os livros no arquivo
 void gravarLivros(FILE *arquivo) {
     for (int i = 0; i < MAX_LIVROS; i++) {
@@ -77,7 +85,7 @@ void listarLivros() {
 }
 
 // Função para incluir um novo requisitante
-void incluirRequisitante() {
+void CriarRequisitante() {
     Requisitante *novo_requisitante = (Requisitante *)malloc(sizeof(Requisitante));
     if (novo_requisitante == NULL) {
         printf("Erro: Falha ao alocar memória para o novo requisitante.\n");
@@ -212,7 +220,6 @@ void carregarRequisicoes() {
     fclose(arquivo);
 }
 
-
 void salvarRequisicoes() {
     FILE *file = fopen("ISBN.txt", "w");
     if (!file) {
@@ -237,8 +244,6 @@ void salvarRequisicoes() {
     fclose(file);
 }
 
-
-
 void efetuarRequisicaoLivro(char *ISBN, int id_requisitante) {
     int indice = hashISBN(ISBN);
     Livro *livro = tabela_hash[indice];
@@ -256,7 +261,6 @@ void efetuarRequisicaoLivro(char *ISBN, int id_requisitante) {
     printf("Livro não encontrado.\n");
 }
 
-
 // Funções de verificação de requisitante e busca de livro (exemplo)
 Livro *buscarLivro(char *ISBN) {
     int indice = hash(ISBN);
@@ -270,7 +274,6 @@ Livro *buscarLivro(char *ISBN) {
     }
     return NULL;
 }
-
 
 // Função para devolver um livro requisitado
 void devolverLivro() {
@@ -299,7 +302,6 @@ void devolverLivro() {
     printf("Livro não encontrado.\n");
 }
 
-
 // Função para listar os livros requisitados
 void listarLivrosRequisitados() {
     printf("===== Lista de Livros Requisitados =====\n");
@@ -318,7 +320,6 @@ void listarLivrosRequisitados() {
     }
 }
 
-
 // Implementação da função getIndex
 int getIndex(int id) {
     // Lógica para encontrar o índice do requisitante com o ID fornecido
@@ -326,8 +327,35 @@ int getIndex(int id) {
     return id % 10; // Exemplo simples: apenas retorna o módulo 10 do ID
 }
 
-
+//Logs
+void registarErro(const char *mensagemErro) {
+    FILE *arquivoLog;
+    arquivoLog = fopen("logs.txt", "a");
+    if (arquivoLog == NULL) {
+        printf("Erro ao abrir arquivo de log: logs.txt\n");
+        exit(1);
+    }
+    char mensagemCompleta[1024];
+    sprintf(mensagemCompleta, "%s\n", mensagemErro);
+    fprintf(arquivoLog, "%s", mensagemCompleta);
+    fclose(arquivoLog);
+}
 
 // Função para gravar os requisitantes no arquivo
+void gravarRequisitantes(FILE *arquivo) {
+    for (int i = 0; i < MAX_REQUISITANTES; i++) {
+        Requisitante *req = lista_requisitantes[i];
+        while (req != NULL) {
+            fprintf(arquivo, "ID: %d\n", req->id_requisitante);
+            fprintf(arquivo, "Nome: %s\n", req->nome);
+            fprintf(arquivo, "Data de Nascimento: %s\n", req->data_nasc);
+            fprintf(arquivo, "ID da Freguesia: %s\n", req->id_freguesia);
+            fprintf(arquivo, "Status: %d\n", req->status);
+            fprintf(arquivo, "Novo: %d\n", req->novo);
+            fprintf(arquivo, "\n");
+            req = req->prox;
+        }
+    }
+}
 
 #endif //SIDEWORK_LIVROS_H

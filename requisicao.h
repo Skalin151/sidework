@@ -1,5 +1,6 @@
-#ifndef SIDEWORK_REQUICAO_H
-#define SIDEWORK_REQUICAO_H
+#ifndef SIDEWORK_REQUISICAO_H
+#define SIDEWORK_REQUISICAO_H
+
 #define MAX_LIVROS 100
 #define MAX_REQUISITANTES 100
 #define MAX_DISTRITOS 100
@@ -15,6 +16,7 @@
 #include <ctype.h>
 #include <locale.h>
 #include "estruturas.h"
+
 // Tabela de hash para os livros
 Livro *tabela_hash[MAX_LIVROS];
 
@@ -29,19 +31,6 @@ RequisicaoLivro *lista_requisicoes[MAX_REQ_LIVROS];
 Distrito distritos[MAX_DISTRITOS];
 Concelho concelhos[MAX_CONCELHOS];
 Freguesia freguesias[MAX_FREGUESIAS];
-
-void registarErro(const char *mensagemErro) {
-    FILE *arquivoLog;
-    arquivoLog = fopen("logs.txt", "a");
-    if (arquivoLog == NULL) {
-        printf("Erro ao abrir arquivo de log: logs.txt\n");
-        exit(1);
-    }
-    char mensagemCompleta[1024];
-    sprintf(mensagemCompleta, "%s\n", mensagemErro);
-    fprintf(arquivoLog, "%s", mensagemCompleta);
-    fclose(arquivoLog);
-}
 
 int calcularAlgoritmoControle(int id) {
     int soma = 0;
@@ -68,7 +57,7 @@ void carregarRequisitantes() {
         Requisitante *novo_requisitante = (Requisitante *)malloc(sizeof(Requisitante));
         if (novo_requisitante == NULL) {
             printf("Erro: Falha ao alocar memória para o requisitante.\n");
-            registarErro("Erro: Falha ao alocar memória para o requisitante.\n");
+            registarErro("Erro: Falha ao alocar memória para o requisitante.\\n");
             fclose(arquivo);
             return;
         }
@@ -218,24 +207,5 @@ Livro* obterProximoLivro(Livro *livro) {
 
     return NULL; // Retorna NULL se não houver próximo livro
 }
-//Logs
 
-// Função para gravar os requisitantes no arquivo
-void gravarRequisitantes(FILE *arquivo) {
-    for (int i = 0; i < MAX_REQUISITANTES; i++) {
-        Requisitante *req = lista_requisitantes[i];
-        while (req != NULL) {
-            fprintf(arquivo, "ID: %d\n", req->id_requisitante);
-            fprintf(arquivo, "Nome: %s\n", req->nome);
-            fprintf(arquivo, "Data de Nascimento: %s\n", req->data_nasc);
-            fprintf(arquivo, "ID da Freguesia: %s\n", req->id_freguesia);
-            fprintf(arquivo, "Status: %d\n", req->status);
-            fprintf(arquivo, "Novo: %d\n", req->novo);
-            fprintf(arquivo, "\n");
-            req = req->prox;
-        }
-    }
-}
-
-
-#endif //SIDEWORK_REQUICAO_H
+#endif //SIDEWORK_REQUISICAO_H
