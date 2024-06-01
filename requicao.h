@@ -2,9 +2,9 @@
 #define SIDEWORK_REQUICAO_H
 #define MAX_LIVROS 100
 #define MAX_REQUISITANTES 100
-#define MAX_DISTRICTS 100
-#define MAX_MUNICIPALITIES 100
-#define MAX_PARISHES 100
+#define MAX_DISTRITOS 100
+#define MAX_CONCELHOS 100
+#define MAX_FREGUESIAS 100
 #define MAX_REQ_LIVROS 100
 #define REQUISITADO 1
 #define NAO_REQUISITADO 0
@@ -14,56 +14,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <locale.h>
-
-// Adicione ou modifique a estrutura Livro para incluir o status
-typedef struct Livro {
-    char ISBN[14]; // ISBN (incluindo terminador de string)
-    char titulo[100];
-    char autor[100];
-    char area[50];
-    int ano_publicacao;
-    int status; // status do livro: 0 para não requisitado, 1 para requisitado
-    int id_requisitante;
-    struct Livro *prox; // Ponteiro para o próximo livro na lista ligada
-} Livro;
-
-// Estrutura para representar um requisitante
-typedef struct Requisitante {
-    int id_requisitante;
-    int status;
-    char nome[100];
-    char data_nasc[11]; // formato [dd-mm-aaaa]
-    char id_freguesia[7]; // 6 caracteres (distrito + concelho + freguesia)
-    int novo;
-    struct Requisitante *prox; // Ponteiro para o próximo requisitante na lista ligada
-} Requisitante;
-
-// Estrutura para representar uma requisição de livro
-typedef struct RequisicaoLivro {
-    char ISBN[14];
-    int id_requisitante;
-    struct RequisicaoLivro *prox; // Ponteiro para a próxima requisição de livro na lista ligada
-} RequisicaoLivro;
-
-// Estrutura para representar um distrito
-typedef struct District {
-    char id_distrito[3];
-    char nome_distrito[50];
-} District;
-
-// Estrutura para representar um concelho
-typedef struct Municipality {
-    char id_concelho[5];
-    char nome_concelho[50];
-} Municipality;
-
-// Estrutura para representar uma freguesia
-typedef struct Parish {
-    char id_freguesia[7];
-    char nome_freguesia[100];
-} Parish;
-
-
+#include "estruturas.h"
 // Tabela de hash para os livros
 Livro *tabela_hash[MAX_LIVROS];
 
@@ -75,10 +26,22 @@ Requisitante *requisitantes_novos = NULL;
 RequisicaoLivro *lista_requisicoes[MAX_REQ_LIVROS];
 
 // Vetores para armazenar distritos, concelhos e freguesias
-District districts[MAX_DISTRICTS];
-Municipality municipalities[MAX_MUNICIPALITIES];
-Parish parishes[MAX_PARISHES];
+Distrito distritos[MAX_DISTRITOS];
+Concelho concelhos[MAX_CONCELHOS];
+Freguesia freguesias[MAX_FREGUESIAS];
 
+void registarErro(const char *mensagemErro) {
+    FILE *arquivoLog;
+    arquivoLog = fopen("logs.txt", "a");
+    if (arquivoLog == NULL) {
+        printf("Erro ao abrir arquivo de log: logs.txt\n");
+        exit(1);
+    }
+    char mensagemCompleta[1024];
+    sprintf(mensagemCompleta, "%s\n", mensagemErro);
+    fprintf(arquivoLog, "%s", mensagemCompleta);
+    fclose(arquivoLog);
+}
 
 int calcularAlgoritmoControle(int id) {
     int soma = 0;
@@ -92,28 +55,11 @@ int calcularAlgoritmoControle(int id) {
     return (11 - (soma % 11)) % 10;
 }
 
-void listarRequisitantes() {
-    printf("\n### LISTA DE NOVOS REQUISITANTES ###\n");
-    for (int i = 0; i < MAX_REQUISITANTES; i++) {
-        Requisitante *temp = lista_requisitantes[i];
-        while (temp != NULL) {
-            if (temp->novo) { // Lista apenas os novos requisitantes
-                printf("ID: %d\n", temp->id_requisitante);
-                printf("Nome: %s\n", temp->nome);
-                printf("Data de nascimento: %s\n", temp->data_nasc);
-                printf("ID Freguesia: %s\n", temp->id_freguesia);
-                printf("\n");
-            }
-            temp = temp->prox;
-        }
-    }
-}
-
-
 void carregarRequisitantes() {
     FILE *arquivo = fopen("Requisitantes.txt", "r");
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo de requisitantes.\n");
+        registarErro("Erro ao abrir o arquivo de requisitantes.\n");
         return;
     }
 
@@ -122,6 +68,7 @@ void carregarRequisitantes() {
         Requisitante *novo_requisitante = (Requisitante *)malloc(sizeof(Requisitante));
         if (novo_requisitante == NULL) {
             printf("Erro: Falha ao alocar memória para o requisitante.\n");
+            registarErro("Erro: Falha ao alocar memória para o requisitante.\n");
             fclose(arquivo);
             return;
         }
@@ -153,7 +100,7 @@ void carregarRequisitantes() {
     fclose(arquivo);
 }
 
-/*void imprimirRequisitantes() {
+void imprimirRequisitantes() {
     for (int i = 0; i < MAX_REQUISITANTES; i++) {
         Requisitante *atual = lista_requisitantes[i];
         while (atual != NULL) {
@@ -166,7 +113,7 @@ void carregarRequisitantes() {
             atual = atual->prox;
         }
     }
-}*/
+}
 
 
 int validarIdRequisitante(int id_requisitante) {
@@ -178,6 +125,7 @@ void listarUsuariosMaisRequisitantes() {
     FILE *arquivo = fopen("Requisitantes.txt", "r");
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo de requisitantes.\n");
+        registarErro("Erro ao abrir o arquivo de requisitantes.\n");
         return;
     }
 
@@ -269,6 +217,24 @@ Livro* obterProximoLivro(Livro *livro) {
     }
 
     return NULL; // Retorna NULL se não houver próximo livro
+}
+//Logs
+
+// Função para gravar os requisitantes no arquivo
+void gravarRequisitantes(FILE *arquivo) {
+    for (int i = 0; i < MAX_REQUISITANTES; i++) {
+        Requisitante *req = lista_requisitantes[i];
+        while (req != NULL) {
+            fprintf(arquivo, "ID: %d\n", req->id_requisitante);
+            fprintf(arquivo, "Nome: %s\n", req->nome);
+            fprintf(arquivo, "Data de Nascimento: %s\n", req->data_nasc);
+            fprintf(arquivo, "ID da Freguesia: %s\n", req->id_freguesia);
+            fprintf(arquivo, "Status: %d\n", req->status);
+            fprintf(arquivo, "Novo: %d\n", req->novo);
+            fprintf(arquivo, "\n");
+            req = req->prox;
+        }
+    }
 }
 
 

@@ -1,100 +1,99 @@
-1012345678901 0
-1023456789012 0
-2023456789012 0
-1123456789012 0
-1134567890123 0
-2134567890123 0
-4023456789012 0
-2134567890123 0
-1234567890123 0
-3134567890123 0
-1245678901234 0
-5023456789012 0
-2234567890123 0
-2245678901234 0
-6023456789012 0
-3245678901234 0
-1356789012345 0
-7023456789012 0
-5134567890123 0
-3245678901234 0
-2345678901234 0
-2356789012345 0
-8023456789012 0
-6134567890123 0
-3345678901234 0
-9012345678901 0
-1912345678901 0
-3356789012345 0
-9023456789012 0
-1467890123456 0
-7134567890123 0
-3801234567890 0
-4356789012345 0
-2467890123456 0
-8134567890123 0
-4801234567890 0
-6245678901234 0
-2912345678901 0
-4356789012345 0
-3456789012345 0
-3467890123456 0
-9134567890123 0
-5801234567890 0
-1578901234567 0
-7245678901234 0
-4456789012345 0
-4467890123456 0
-6801234567890 0
-2578901234567 0
-8245678901234 0
-4912345678901 0
-5467890123456 0
-7801234567890 0
-3578901234567 0
-9245678901234 0
-5912345678901 0
-1689012345678 0
-7356789012345 0
-5467890123456 0
-4567890123456 0
-8801234567890 0
-4578901234567 0
-6912345678901 0
-2689012345678 0
-8356789012345 0
-5567890123456 0
-9801234567890 0
-5578901234567 0
-7912345678901 0
-3689012345678 0
-9356789012345 0
-9801234567890 0
-8901234567890 0
-6578901234567 0
-8912345678901 0
-4689012345678 0
-2790123456789 0
-8467890123456 0
-6578901234567 0
-9901234567890 0
-5678901234567 0
-9912345678901 0
-5689012345678 0
-3790123456789 0
-9467890123456 0
-6678901234567 0
-6689012345678 0
-4790123456789 0
-7689012345678 0
-5790123456789 0
-9578901234567 0
-7689012345678 0
-6789012345678 0
-6790123456789 0
-7789012345678 0
-7790123456789 0
-8790123456789 0
-8790123456789 0
-7890123456789 0
-8890123456789 0
+1012345678901	O Segredo Perdido	Joao Silva	Ficcao Cientifica	2005	0   1
+1023456789120	A Jornada Inesperada	Maria Fernandes	Aventura	2010	0
+1123456789230	Noite Sombria	Carlos Pereira	Terror	2012	0
+2023456789012	Caminhos Cruzados	Ana Souza	Romance	2018	0
+1134567890123	O Ultimo Refugio	Ricardo Oliveira	Suspense	2015	0
+1234567890123	O Misterio do Lago	Julia Costa	Misterio	2016	0
+2134567890123	A Profecia	Pedro Lima	Fantasia	2020	0
+4023456789012	Vidas Entrelacadas	Laura Gomes	Drama	2008	0
+2134567890123	O Enigma	Paulo Machado	Ficcao Cientifica	2002	0
+2234567890123	O Caminho das Estrelas	Raquel Alves	Aventura	2014	0
+5023456789012	Sombras do Passado	Marcos Ribeiro	Terror	2011	0
+1245678901234	A Busca Eterna	Fernanda Silva	Romance	2013	0
+3134567890123	A Ultima Missao	Diego Santos	Suspense	2017	0
+6023456789012	O Despertar	Gabriela Almeida	Fantasia	2021	0
+2245678901234	Segredos Revelados	Bruno Martins	Misterio	2009	0
+2345678901234	Horizonte Distante	Beatriz Fernandes	Drama	2006	0
+3245678901234	O Guardiao	Tiago Cardoso	Aventura	2010	0
+5134567890123	A Revelacao	Carla Lima	Terror	2018	0
+7023456789012	Labirinto	Lucas Souza	Suspense	2014	0
+1356789012345	O Alvorecer	Marina Duarte	Fantasia	2017	0
+3245678901234	Rota do Destino	Felipe Araujo	Misterio	2011	0
+9012345678901	A Conspiracao	Renata Monteiro	Drama	2019	0
+3345678901234	O Viajante	Eduardo Freitas	Aventura	2015	0
+6134567890123	A Sombra do Tempo	Aline Rocha	Ficcao Cientifica	2012	0
+8023456789012	O Refugio Secreto	Igor Mendes	Terror	2008	0
+2356789012345	Coracao Valente	Patricia Nunes	Romance	2016	0
+3801234567890	A Ilusao	Andre Costa	Suspense	2020	0
+7134567890123	O Destino do Heroi	Sabrina Melo	Fantasia	2013	0
+1467890123456	Segredos do Mar	Marcelo Torres	Misterio	2007	0
+9023456789012	A Expedicao	Tatiana Pinto	Aventura	2011	0
+3356789012345	Encontro as Escuras	Sergio Campos	Ficcao Cientifica	2014	0
+1912345678901	Lendas e Mitos	Vanessa Carvalho	Terror	2018	0
+3456789012345	O Legado	Flavio Gomes	Romance	2016	0
+4356789012345	Labirintos da Vida	Camila Martins	Suspense	2012	0
+2912345678901	Fragmentos do Tempo	Rodrigo Lopes	Fantasia	2021	0
+6245678901234	A Luz da Lua	Amanda Oliveira	Misterio	2019	0
+4801234567890	Tempestade	Leonardo Santos	Drama	2017	0
+8134567890123	O Destino dos Bravos	Rafaela Barros	Aventura	2005	0
+2467890123456	Murmurios da Floresta	Gustavo Costa	Terror	2013	0
+4356789012345	Vidas Paralelas	Bianca Ribeiro	Romance	2009	0
+4456789012345	Sombras na Noite	Henrique Almeida	Suspense	2015	0
+7245678901234	Caminhos de Pedra	Larissa Souza	Fantasia	2010	0
+1578901234567	O Guardiao da Luz	Rafael Nascimento	Misterio	2012	0
+5801234567890	Asas de Prata	Isabel Costa	Drama	2018	0
+9134567890123	O Setimo Selo	Victor Ferreira	Aventura	2014	0
+3467890123456	O Labirinto dos Sonhos	Juliana Melo	Ficcao Cientifica	2011	0
+4912345678901	Ceu de Outono	Thiago Rocha	Terror	2016	0
+8245678901234	A Ultima Estacao	Daniela Sousa	Romance	2020	0
+2578901234567	Horizonte Perdido	Bruno Matos	Suspense	2007	0
+6801234567890	Mar de Esperanca	Carolina Dias	Fantasia	2015	0
+4467890123456	O Encontro	Vitor Lima	Misterio	2013	0
+4567890123456	O Silencio das Aguas	Eliana Ferreira	Drama	2009	0
+5467890123456	A Ilha	Ricardo Martins	Aventura	2011	0
+7356789012345	O Guardiao do Tempo	Fabio Mendes	Ficcao Cientifica	2014	0
+1689012345678	Ecos do Passado	Ana Clara Costa	Terror	2018	0
+5912345678901	Vento Norte	Marcelo Oliveira	Romance	2016	0
+9245678901234	Sombras do Deserto	Renata Pereira	Suspense	2012	0
+3578901234567	O Caminho do Guerreiro	Rodrigo Silva	Fantasia	2021	0
+7801234567890	A Lenda do Dragao	Larissa Almeida	Misterio	2017	0
+5467890123456	Os Segredos da Floresta	Paulo Cardoso	Drama	2013	0
+5567890123456	Coracao de Aco	Juliana Ribeiro	Aventura	2005	0
+8356789012345	O Ultimo Reino	Thiago Fernandes	Ficcao Cientifica	2019	0
+6912345678901	Caminho das Pedras	Amanda Lima	Romance	2011	0
+4578901234567	Sob o Sol	Victor Alves	Suspense	2018	0
+8801234567890	A Fortaleza	Tatiana Carvalho	Fantasia	2010	0
+8901234567890	O Segredo do Deserto	Bruno Costa	Misterio	2014	0
+9801234567890	Ecos do Futuro	Julia Almeida	Drama	2012	0
+9356789012345	O Resgate	Felipe Santos	Aventura	2017	0
+3689012345678	O Ultimo Desejo	Aline Nunes	Ficcao Cientifica	2020	0
+7912345678901	A Coroa Perdida	Leonardo Melo	Terror	2016	0
+5578901234567	O Veil da Noite	Fernanda Barros	Romance	2008	0
+9801234567890	O Enigma do Tempo	Lucas Ferreira	Suspense	2013	0
+5678901234567	Asas da Liberdade	Gabriela Monteiro	Fantasia	2009	0
+9901234567890	O Fim do Mundo	Igor Lima	Misterio	2011	0
+6578901234567	O Guerreiro das Sombras	Marina Sousa	Drama	2015	0
+8467890123456	O Coracao da Montanha	Rafael Ribeiro	Aventura	2017	0
+2790123456789	O Segredo dos Anjos	Vanessa Santos	Ficcao Cientifica	2021	0
+4689012345678	O Chamado	Diego Costa	Terror	2013	0
+8912345678901	Asas do Vento	Ana Paula Almeida	Romance	2005	0
+6578901234567	O Caminho das Flores	Vitor Fernandes	Suspense	2018	0
+6678901234567	O Sussurro	Raquel Gomes	Fantasia	2010	0
+9467890123456	O Legado do Dragao	Beatriz Silva	Misterio	2016	0
+3790123456789	O Voo da Aguia	Bruno Oliveira	Drama	2012	0
+5689012345678	A Travessia	Carlos Souza	Aventura	2009	0
+9912345678901	O Guardiao das Estrelas	Carla Freitas	Ficcao Cientifica	2011	0
+4790123456789	Luzes na Escuridao	Lucas Nunes	Terror	2017	0
+6689012345678	O Encantamento	Marina Carvalho	Romance	2020	0
+6789012345678	O Retorno do Heroi	Rodrigo Martins	Suspense	2013	0
+7689012345678	Sombras e Luz	Juliana Costa	Fantasia	2007	0
+9578901234567	O Guardiao do Segredo	Rafael Lima	Misterio	2011	0
+5790123456789	A Jornada do Guerreiro	Gabriela Alves	Drama	2018	0
+7689012345678	O Enigma da Montanha	Tiago Fernandes	Aventura	2015	0
+7789012345678	Caminhos do Destino	Amanda Freitas	Ficcao Cientifica	2019	0
+6790123456789	Sombras do Medo	Leonardo Barros	Terror	2008	0
+7790123456789	A Espada do Rei	Sabrina Costa	Romance	2016	0
+7890123456789	O Coracao do Dragao	Felipe Melo	Suspense	2012	0
+8790123456789	A Lenda da Fenix	Vanessa Almeida	Fantasia	2021	0
+8790123456789	O Despertar do Fogo	Bruno Santos	Misterio	2017	0
+8890123456789	O Reino Perdido	Renata Costa	Drama	2013	0
