@@ -1,54 +1,20 @@
 #ifndef SIDEWORK_REQUISICAO_H
 #define SIDEWORK_REQUISICAO_H
 
-#define MAX_LIVROS 100
-#define MAX_REQUISITANTES 100
-#define MAX_DISTRITOS 100
-#define MAX_CONCELHOS 100
-#define MAX_FREGUESIAS 100
-#define MAX_REQ_LIVROS 100
-#define REQUISITADO 1
-#define NAO_REQUISITADO 0
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <locale.h>
+#include <time.h>
 #include "estruturas.h"
+#include "hashing.h"
 
-// Tabela de hash para os livros
-Livro *tabela_hash[MAX_LIVROS];
-
-// Lista ligada para os requisitantes
-Requisitante *lista_requisitantes[MAX_REQUISITANTES];
-Requisitante *requisitantes_novos = NULL;
-
-// Lista ligada para as requisições de livros
-RequisicaoLivro *lista_requisicoes[MAX_REQ_LIVROS];
-
-// Vetores para armazenar distritos, concelhos e freguesias
-Distrito distritos[MAX_DISTRITOS];
-Concelho concelhos[MAX_CONCELHOS];
-Freguesia freguesias[MAX_FREGUESIAS];
-
-int calcularAlgoritmoControle(int id) {
-    int soma = 0;
-    int multiplicador = 2;
-    while (id > 0) {
-        int digito = id % 10;
-        soma += digito * multiplicador;
-        multiplicador++;
-        id /= 10;
-    }
-    return (11 - (soma % 11)) % 10;
-}
 
 void carregarRequisitantes() {
     FILE *arquivo = fopen("Requisitantes.txt", "r");
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo de requisitantes.\n");
-        registarErro("Erro ao abrir o arquivo de requisitantes.\n");
         return;
     }
 
@@ -57,7 +23,6 @@ void carregarRequisitantes() {
         Requisitante *novo_requisitante = (Requisitante *)malloc(sizeof(Requisitante));
         if (novo_requisitante == NULL) {
             printf("Erro: Falha ao alocar memória para o requisitante.\n");
-            registarErro("Erro: Falha ao alocar memória para o requisitante.\\n");
             fclose(arquivo);
             return;
         }
@@ -65,12 +30,17 @@ void carregarRequisitantes() {
         // Inicializa a estrutura para evitar dados incorretos
         memset(novo_requisitante, 0, sizeof(Requisitante));
 
-        sscanf(linha, "%d %[^\t\n] %10s %s",
-               &novo_requisitante->id_requisitante,
-               novo_requisitante->nome,
-               novo_requisitante->data_nasc,
-               novo_requisitante->id_freguesia);
+        int id_requisitante;
+        int qtd_requisitante;
+        char nome[100], data_nasc[11], id_freguesia[10];
+        int qtd_requisicoes;
+        sscanf(linha, "%d %[^\t\n] %10s %s %d", &id_requisitante, nome, data_nasc, id_freguesia, &qtd_requisitante);
 
+        novo_requisitante->id_requisitante = id_requisitante;
+        strcpy(novo_requisitante->nome, nome);
+        strcpy(novo_requisitante->data_nasc, data_nasc);
+        strcpy(novo_requisitante->id_freguesia, id_freguesia);
+        novo_requisitante->qtd_requisitante = qtd_requisitante;
         novo_requisitante->novo = 0; // Indica que foi carregado do arquivo
         novo_requisitante->prox = NULL;
 
@@ -97,6 +67,7 @@ void imprimirRequisitantes() {
             printf("Nome: %s\n", atual->nome);
             printf("Data de Nascimento: %s\n", atual->data_nasc);
             printf("ID Freguesia: %s\n", atual->id_freguesia);
+            printf("Número de requisições: %d\n", atual->qtd_requisitante);
             printf("Novo: %d\n", atual->novo);
             printf("-------------------------\n");
             atual = atual->prox;
@@ -105,85 +76,72 @@ void imprimirRequisitantes() {
 }
 
 
-int validarIdRequisitante(int id_requisitante) {
-    int id = id_requisitante / 10;
-    int controle = id_requisitante % 10;
-    return controle == calcularAlgoritmoControle(id);
-}
 void listarUsuariosMaisRequisitantes() {
-    FILE *arquivo = fopen("Requisitantes.txt", "r");
-    if (arquivo == NULL) {
-        printf("Erro ao abrir o arquivo de requisitantes.\n");
-        registarErro("Erro ao abrir o arquivo de requisitantes.\n");
+    // Variáveis para armazenar o ID do requisitante com o maior número de requisições
+    int max_requisicoes = 0;
+    int id_requisitante_max = -1;
+
+    // Itera sobre os requisitantes para encontrar aquele com o maior número de requisições
+    for (int i = 0; i < MAX_REQUISITANTES; i++) {
+        Requisitante *temp = lista_requisitantes[i];
+        while (temp != NULL) {
+            if (temp->qtd_requisitante > max_requisicoes) {
+                max_requisicoes = temp->qtd_requisitante;
+                id_requisitante_max = temp->id_requisitante;
+            }
+            temp = temp->prox;
+        }
+    }
+
+
+void salvarRequisitantes() {
+    FILE *arquivo = fopen("Requisitantes.txt", "w");
+    if (!arquivo) {
+        printf("Erro: Não foi possível abrir o arquivo Requisitantes.txt para escrita\n");
         return;
     }
 
-    int contadores[MAX_REQUISITANTES] = {0};
-    char linha[256];
-    int max_requisicoes = 0;
-
-    // Ler o arquivo e contar as ocorrências de cada requisitante
-    while (fgets(linha, sizeof(linha), arquivo)) {
-        int id_requisitante;
-        char nome[100], data_nasc[11], id_freguesia[10];
-        sscanf(linha, "%d;%[^;];%[^;];%s", &id_requisitante, nome, data_nasc, id_freguesia);
-
-        if (id_requisitante >= 0 && id_requisitante < MAX_REQUISITANTES) {
-            contadores[id_requisitante]++;
-            if (contadores[id_requisitante] > max_requisicoes) {
-                max_requisicoes = contadores[id_requisitante];
-            }
+    for (int i = 0; i < MAX_REQUISITANTES; i++) {
+        Requisitante *requisitante = lista_requisitantes[i];
+        while (requisitante!= NULL) {
+            fprintf(arquivo, "%d\t%s\t%s\t%s\t%d\n",
+                    requisitante->id_requisitante, requisitante->nome, requisitante->data_nasc,
+                    requisitante->id_freguesia, requisitante->qtd_requisitante);
+            requisitante = requisitante->prox;
         }
     }
 
     fclose(arquivo);
+    printf("Dados dos requisitantes salvos com sucesso!\n");
+}
 
-    // Listar todos os requisitantes que têm o número máximo de ocorrências no arquivo
-    printf("### USUÁRIOS MAIS PRESENTES NO ARQUIVO ###\n");
+
+    // Se nenhum requisitante for encontrado, exibe uma mensagem e retorna
+    if (id_requisitante_max == -1) {
+        printf("Nenhum requisitante encontrado.\n");
+        return;
+    }
+
+    // Imprime os detalhes do requisitante com o maior número de requisições
+    printf("### USUÁRIO(S) COM MAIS REQUISIÇÕES ###\n");
     for (int i = 0; i < MAX_REQUISITANTES; i++) {
-        if (contadores[i] == max_requisicoes && max_requisicoes > 0) {
-            // Procurar o requisitante na lista de requisitantes
-            Requisitante *temp = lista_requisitantes[i];
-            while (temp != NULL) {
-                if (temp->id_requisitante == i) {
-                    printf("ID do requisitante: %d\n", temp->id_requisitante);
-                    printf("Nome: %s\n", temp->nome);
-                    printf("Número de vezes presente no arquivo: %d\n", contadores[i]);
-                    printf("\n");
-                    break;
-                }
-                temp = temp->prox;
+        Requisitante *temp = lista_requisitantes[i];
+        while (temp != NULL) {
+            if (temp->id_requisitante == id_requisitante_max) {
+                printf("ID do requisitante: %d\n", temp->id_requisitante);
+                printf("Nome: %s\n", temp->nome);
+                printf("Data de Nascimento: %s\n", temp->data_nasc);
+                printf("ID Freguesia: %s\n", temp->id_freguesia);
+                printf("Número de requisições: %d\n", max_requisicoes);
+                printf("\n");
             }
+            temp = temp->prox;
         }
     }
 }
 
-int hash(char *ISBN) {
-    int soma = 0;
-    for (int i = 0; i < strlen(ISBN); i++) {
-        soma += ISBN[i];
-    }
-    return soma % MAX_LIVROS;
-}
 
-void adicionarLivroLista(Livro *livro) {
-    // Calcula o índice na tabela hash baseado no ISBN
-    int indice = hashISBN(livro->ISBN);
 
-    // Insere o livro no início da lista ligada na tabela hash
-    livro->prox = tabela_hash[indice];
-    tabela_hash[indice] = livro;
-}
-
-// Função auxiliar para calcular o índice da tabela hash
-int hashISBN(char *isbn) {
-    // Aqui utilizamos uma simples soma dos valores dos caracteres do ISBN para o índice
-    int soma = 0;
-    for (int i = 0; isbn[i] != '\0'; i++) {
-        soma += isbn[i];
-    }
-    return soma % MAX_LIVROS;
-}
 Livro* obterPrimeiroLivro() {
     for (int i = 0; i < MAX_LIVROS; i++) {
         if (tabela_hash[i] != NULL) {
@@ -208,4 +166,223 @@ Livro* obterProximoLivro(Livro *livro) {
     return NULL; // Retorna NULL se não houver próximo livro
 }
 
+void gerarArquivoXML(const char *filename) {
+    FILE *arquivo = fopen(filename, "w");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo para escrita.\n");
+        return;
+    }
+
+    fprintf(arquivo, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+    fprintf(arquivo, "<biblioteca>\n");
+
+    // Exportar livros
+    fprintf(arquivo, "  <livros>\n");
+    for (int i = 0; i < MAX_LIVROS; i++) {
+        Livro *livro = tabela_hash[i];
+        while (livro != NULL) {
+            fprintf(arquivo, "    <livro>\n");
+            fprintf(arquivo, "      <ISBN>%s</ISBN>\n", livro->ISBN);
+            fprintf(arquivo, "      <titulo>%s</titulo>\n", livro->titulo);
+            fprintf(arquivo, "      <autor>%s</autor>\n", livro->autor);
+            fprintf(arquivo, "      <area>%s</area>\n", livro->area);
+            fprintf(arquivo, "      <ano_publicacao>%d</ano_publicacao>\n", livro->ano_publicacao);
+            fprintf(arquivo, "      <status>%d</status>\n", livro->status);
+            fprintf(arquivo, "      <id_requisitante>%d</id_requisitante>\n", livro->id_requisitante);
+            fprintf(arquivo, "      <qtd_requisicoes>%d</qtd_requisicoes>\n", livro->qtd_requisicoes);
+            fprintf(arquivo, "    </livro>\n");
+            livro = livro->prox;
+        }
+    }
+    fprintf(arquivo, "  </livros>\n");
+
+    // Exportar requisitantes
+    fprintf(arquivo, "  <requisitantes>\n");
+    for (int i = 0; i < MAX_REQUISITANTES; i++) {
+        Requisitante *req = lista_requisitantes[i];
+        while (req != NULL) {
+            fprintf(arquivo, "    <requisitante>\n");
+            fprintf(arquivo, "      <id_requisitante>%d</id_requisitante>\n", req->id_requisitante);
+            fprintf(arquivo, "      <nome>%s</nome>\n", req->nome);
+            fprintf(arquivo, "      <data_nasc>%s</data_nasc>\n", req->data_nasc);
+            fprintf(arquivo, "      <id_freguesia>%s</id_freguesia>\n", req->id_freguesia);
+            fprintf(arquivo, "      <status>%d</status>\n", req->status);
+            fprintf(arquivo, "      <novo>%d</novo>\n", req->novo);
+            fprintf(arquivo, "    </requisitante>\n");
+            req = req->prox;
+        }
+    }
+    fprintf(arquivo, "  </requisitantes>\n");
+
+    // Exportar requisições
+    fprintf(arquivo, "  <requisicoes>\n");
+    for (int i = 0; i < MAX_REQUISITANTES; i++) {
+        RequisicaoLivro *req = lista_requisicoes[i];
+        while (req != NULL) {
+            fprintf(arquivo, "    <requisicao>\n");
+            fprintf(arquivo, "      <ISBN>%s</ISBN>\n", req->ISBN);
+            fprintf(arquivo, "      <id_requisitante>%d</id_requisitante>\n", req->id_requisitante);
+            fprintf(arquivo, "    </requisicao>\n");
+            req = req->prox;
+        }
+    }
+    fprintf(arquivo, "  </requisicoes>\n");
+
+    fprintf(arquivo, "</biblioteca>\n");
+
+    fclose(arquivo);
+}
+
+size_t calcularTamanhoTotal() {
+    size_t tamanho_total = 0;
+
+    tamanho_total += sizeof(Livro);
+    tamanho_total += sizeof(Requisitante);
+    tamanho_total += sizeof(RequisicaoLivro);
+    tamanho_total += sizeof(Distrito) * MAX_DISTRITOS;
+    tamanho_total += sizeof(Concelho) * MAX_CONCELHOS;
+    tamanho_total += sizeof(Freguesia) * MAX_FREGUESIAS;
+    tamanho_total += sizeof(AreaCount) * MAX_AREAS;
+
+    return tamanho_total;
+}
+
+// Função para calcular a idade a partir da data de nascimento no formato "dd-mm-aaaa"
+int calcularIdade(const char *data_nasc) {
+    int dia, mes, ano;
+    sscanf(data_nasc, "%2d-%2d-%4d", &dia, &mes, &ano);
+
+    time_t t = time(NULL);
+    struct tm *hoje = localtime(&t);
+
+    int idade = hoje->tm_year + 1900 - ano;
+    if (mes > (hoje->tm_mon + 1) || (mes == (hoje->tm_mon + 1) && dia > hoje->tm_mday)) {
+        idade--;
+    }
+
+    return idade;
+}
+
+// Função para listar os requisitantes mais velhos
+void listarRequisitantesMaisVelhos() {
+    int idade_maxima = 0;
+
+    // Primeiro, encontrar a idade máxima
+    for (int i = 0; i < MAX_REQUISITANTES; i++) {
+        Requisitante *temp = lista_requisitantes[i];
+        while (temp != NULL) {
+            int idade = calcularIdade(temp->data_nasc);
+            if (idade > idade_maxima) {
+                idade_maxima = idade;
+            }
+            temp = temp->prox;
+        }
+    }
+
+    // Segundo, listar os requisitantes que têm essa idade máxima
+    printf("### REQUISITANTES MAIS VELHOS (IDADE: %d ANOS) ###\n", idade_maxima);
+    for (int i = 0; i < MAX_REQUISITANTES; i++) {
+        Requisitante *temp = lista_requisitantes[i];
+        while (temp != NULL) {
+            int idade = calcularIdade(temp->data_nasc);
+            if (idade == idade_maxima) {
+                printf("ID: %d\n", temp->id_requisitante);
+                printf("Nome: %s\n", temp->nome);
+                printf("Data de Nascimento: %s\n", temp->data_nasc);
+                printf("ID Freguesia: %s\n", temp->id_freguesia);
+                printf("Novo: %d\n", temp->novo);
+                printf("-------------------------\n");
+            }
+            temp = temp->prox;
+        }
+    }
+}
+
+float calcularMediaIdades() {
+    int soma_idades = 0;
+    int total_pessoas = 0;
+
+    for (int i = 0; i < MAX_REQUISITANTES; i++) {
+        Requisitante *temp = lista_requisitantes[i];
+        while (temp != NULL) {
+            int idade = calcularIdade(temp->data_nasc);
+            soma_idades += idade;
+            total_pessoas++;
+            temp = temp->prox;
+        }
+    }
+
+    if (total_pessoas == 0) {
+        printf("Não há pessoas na lista.\n");
+        return 0;
+    }
+
+    float media_idades = (float)soma_idades / total_pessoas;
+    printf("A média das idades de todas as pessoas é: %.2f anos.\n", media_idades);
+    return media_idades;
+}
+
+int contarPessoasIdadeSuperior(int valor_limite) {
+    int contador = 0;
+
+    for (int i = 0; i < MAX_REQUISITANTES; i++) {
+        Requisitante *temp = lista_requisitantes[i];
+        while (temp != NULL) {
+            int idade = calcularIdade(temp->data_nasc);
+            if (idade > valor_limite) {
+                contador++;
+            }
+            temp = temp->prox;
+        }
+    }
+
+    return contador;
+}
+
+int determinarIdadeMaisRequisitantes(int *idade_mais_requisitantes) {
+    int contagem_idades[120] = {0}; // Assumindo uma idade máxima de 120 anos
+
+    for (int i = 0; i < MAX_REQUISITANTES; i++) {
+        Requisitante *temp = lista_requisitantes[i];
+        while (temp != NULL) {
+            int idade = calcularIdade(temp->data_nasc);
+            contagem_idades[idade]++;
+            temp = temp->prox;
+        }
+    }
+
+    int max_contagem = 0;
+    int idade_mais_frequente = 0;
+
+    for (int i = 0; i < 120; i++) {
+        if (contagem_idades[i] > max_contagem) {
+            max_contagem = contagem_idades[i];
+            idade_mais_frequente = i;
+        }
+    }
+
+    *idade_mais_requisitantes = idade_mais_frequente;
+    return max_contagem;
+}
+void listarPessoasNuncaRequisitaramLivro(Requisitante *lista_requisitantes) {
+    Requisitante *temp = lista_requisitantes;
+    int flag = 0;
+
+    while (temp != NULL) {
+        if (temp->qtd_requisitante == 0) {
+            flag = 1;
+            printf("ID: %d\n", temp->id_requisitante);
+            printf("Nome: %s\n", temp->nome);
+            printf("Data de Nascimento: %s\n", temp->data_nasc);
+            printf("ID Freguesia: %s\n", temp->id_freguesia);
+            printf("Novo: %d\n", temp->novo);
+            printf("-------------------------\n");
+        }
+        temp = temp->prox;
+    }
+
+    if (!flag) {
+        printf("Não há pessoas que nunca requisitaram um livro.\n");
+    }
+}
 #endif //SIDEWORK_REQUISICAO_H
